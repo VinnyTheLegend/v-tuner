@@ -14,18 +14,18 @@
     visibility.set(visible);
   });
 
-  onMount(() => {
-    const keyHandler = (e: KeyboardEvent) => {
-      if (isVisible && ['Escape'].includes(e.code)) {
-        fetchNui('hideUI');
-        visibility.set(false);
-      }
-    };
+  // onMount(() => {
+  //   const keyHandler = (e: KeyboardEvent) => {
+  //     if (isVisible && ['Escape'].includes(e.code)) {
+  //       fetchNui('hideUI');
+  //       visibility.set(false);
+  //     }
+  //   };
 
-    window.addEventListener('keydown', keyHandler);
+  //   window.addEventListener('keydown', keyHandler);
 
-    return () => window.removeEventListener('keydown', keyHandler);
-  });
+  //   return () => window.removeEventListener('keydown', keyHandler);
+  // });
 </script>
 
 <main>

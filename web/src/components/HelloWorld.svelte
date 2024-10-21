@@ -3,9 +3,8 @@
   import { fetchNui } from '../utils/fetchNui';
   import { useNuiEvent } from '../utils/useNuiEvent';
 
-  useNuiEvent<string>('message', (data) => {
-    console.log(data)
-  })
+  console.log('hello world')
+
 
 </script>
 

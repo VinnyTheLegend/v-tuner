@@ -19,7 +19,7 @@ function Debugger:Set(vehicle)
 	self.vehicle = vehicle
 	self:ResetStats()
 
-	local handlingText = ""
+	local handlingFields = {}
 
 	-- Loop fields.
 	for key, field in pairs(Config.Fields) do
@@ -35,26 +35,11 @@ function Debugger:Set(vehicle)
 			value = TruncateNumber(value)
 		end
 
-		-- Get input.
-		local input = ([[
-			<input
-				oninput='updateHandling(this.id, this.value)'
-				id='%s'
-				value=%s
-			>
-			</input>
-		]]):format(key, value)
-
-		-- Append text.
-		handlingText = handlingText..([[
-			<div class='tooltip'><span class='tooltip-text'>%s</span><span>%s</span>%s</div>
-		]]):format(field.description or "Unspecified.", field.name, input)
+		table.insert(handlingFields, {key, field.name, value, field.description or "Unspecified."})
 	end
 
 	-- Update text.
-	self:Invoke("updateText", {
-		["handling-fields"] = handlingText,
-	})
+	self:Invoke("updateBaseHandling", handlingFields)
 end
 
 function Debugger:UpdateVehicle()
@@ -122,7 +107,7 @@ function Debugger:UpdateAverages()
 	self.gear = GetVehicleCurrentGear(self.vehicle)
 
 	-- Update text.
-	self:Invoke("updateText", {
+	self:Invoke("updateHUD", {
 		["top-speed"] = self.speed * 2.236936,
 		["top-accel"] = self.accel * 60.0 * 2.236936,
 		["top-decel"] = math.abs(self.decel) * 60.0 * 2.236936,
@@ -206,7 +191,10 @@ function Debugger:ToggleOn(toggleData)
 	-- if toggle and not DoesEntityExist(self.vehicle or 0) then return end
 
 	self.toggle = toggleData
-	self:Invoke("toggle", toggleData)
+	SendNUIMessage({
+        action = 'setVisible',
+        data = toggleData
+    })
 end
 
 function Debugger:Invoke(_type, data)
@@ -267,6 +255,7 @@ RegisterNetEvent("vehicleDebug:client:toggleDebug", function()
 	Debugger.toggleOn = not Debugger.toggleOn
 end)
 
-RegisterNUICallback("CloseMenu", function()
+RegisterNUICallback("CloseMenu", function(_, cb)
+	cb({})
 	Debugger:Focus(not Debugger.hasFocus)
 end)
