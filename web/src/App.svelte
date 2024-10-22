@@ -15,10 +15,26 @@
     },
   ]);
 
-  
+  debugData([
+    {
+      action: 'updateHUD',
+      data: {
+        "top-speed": 1,
+        "top-accel": 2,
+        "top-decel": 3,
+        "gear": 4
+      },
+    },
+  ]);
+
+
+
+
   console.log('ui loaded')
   let handling_visible = false
-  
+  let hud_data: HUDdata
+  let handling_data: HandlingData[]
+
   if (isEnvBrowser()) {
     document.body.style.backgroundColor = '#474745';
   }
@@ -36,12 +52,16 @@
   });
 
 
-  useNuiEvent<any>('updateBaseHandling', (data) => {
+  useNuiEvent<HandlingData>('updateBaseHandling', (data) => {
     console.log(data)
   })
 
-  useNuiEvent<any>('setFocus', (data) => {
+  useNuiEvent<boolean>('setFocus', (data) => {
     handling_visible = data
+  })
+
+  useNuiEvent<HUDdata>('updateHUD', (data) => {
+    hud_data = data
   })
 
 </script>
@@ -49,7 +69,9 @@
 <main>
   <VisibilityProvider>
     <div class="main-container">
-      <div class="hud container">HUD HERE</div>
+      {#if hud_data}
+        <div class="hud container">GEAR: {hud_data.gear}</div>
+      {/if}
       {#if handling_visible}
         <div class="handling container">HANDLING HERE</div>
       {/if}
@@ -82,6 +104,7 @@
   }
 
   .hud.container {
+    
     border: 1px yellow solid;
     color: green;
     margin: 5% 5% auto auto;

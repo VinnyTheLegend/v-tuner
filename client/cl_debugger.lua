@@ -35,7 +35,12 @@ function Debugger:Set(vehicle)
 			value = TruncateNumber(value)
 		end
 
-		table.insert(handlingFields, {key, field.name, value, field.description or "Unspecified."})
+		table.insert(handlingFields, {
+			key = key, 
+			name = field.name, 
+			value = value, 
+			description = field.description or "Unspecified."
+		})
 	end
 
 	-- Update text.
