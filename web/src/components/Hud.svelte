@@ -26,7 +26,7 @@
 
 </script>
 
-<div class="container">
+<div class="hud-container">
   {#if hud_data}
     <div><span class="title">Top Speed: </span>{Math.round(hud_data['top-speed'])}</div>
     <!-- <div><span class="title">Top Accel: </span>{Math.round(hud_data['top-accel'])}</div>
@@ -36,7 +36,7 @@
 </div>
 
 <style>
-  .container {
+  .hud-container {
     border: 1px var(--border-color) solid;
     border-radius: 5px;
     padding: 2px 5px;
@@ -46,7 +46,7 @@
     right: 50px;
   }
 
-  .container>div {
+  .hud-container>div {
     text-align: right;
   }
 

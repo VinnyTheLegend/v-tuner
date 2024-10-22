@@ -19,6 +19,17 @@
       data: true,
     },
   ]);
+  debugData([
+    {
+      action: 'updateBaseHandling',
+      data: [{
+        key: 0,
+        name: "ftesthandlingname",
+        description: "this is an extra long thing to test description for handling fields and stuff ya know baws",
+        value: 123.54123123
+      }],
+    }
+  ]);
 
   console.log('ui loaded')
   let handling_visible = false
@@ -94,10 +105,6 @@
     display: flex;
     flex-direction: column;
     position: relative;
-  }
-
-  .handling.container {
-    color: red;
   }
 
 </style>
