@@ -7,10 +7,15 @@
   import {isEnvBrowser} from "./utils/misc";
 
   import Hud from './components/Hud.svelte';
+  import Handling from './components/Handling.svelte';
 
   debugData([
     {
       action: 'setVisible',
+      data: true,
+    },
+    {
+      action: 'setFocus',
       data: true,
     },
   ]);
@@ -36,8 +41,9 @@
   });
 
 
-  useNuiEvent<HandlingData>('updateBaseHandling', (data) => {
+  useNuiEvent<HandlingData[]>('updateBaseHandling', (data) => {
     console.log(data)
+    handling_data = data
   })
 
   useNuiEvent<boolean>('setFocus', (data) => {
@@ -50,13 +56,22 @@
   <VisibilityProvider>
     <div class="main-container">
       <Hud/>
-      {#if handling_visible}
-        <div class="handling container">HANDLING HERE</div>
+      {#if handling_visible && handling_data}
+        <Handling {handling_data}/>
       {/if}
     </div>
   </VisibilityProvider>
 </main>
 <style>
+  :global(:root){
+    font-family: "Lucida Console", "Courier New", monospace;
+    color: white;
+    --bg-color: rgba(70, 0, 70, 0.623);
+    --border-color: rgb(155, 0, 121);
+    --text-color: white;
+    --text-highlight: rgb(0, 141, 197);
+  }
+
   main {
     height: 100vh;
     width: 100vw;
@@ -84,4 +99,5 @@
   .handling.container {
     color: red;
   }
+
 </style>

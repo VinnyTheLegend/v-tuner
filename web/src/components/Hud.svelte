@@ -28,14 +28,30 @@
 
 <div class="container">
   {#if hud_data}
-    <span>GEAR: {hud_data.gear}</span>  
+    <div><span class="title">Top Speed: </span>{Math.round(hud_data['top-speed'])}</div>
+    <!-- <div><span class="title">Top Accel: </span>{Math.round(hud_data['top-accel'])}</div>
+    <div><span class="title">Top Decel: </span>{Math.round(hud_data['top-decel'])}</div> -->
+    <div><span class="title">Gear: </span>{Math.round(hud_data.gear)}</div>
   {/if}
 </div>
 
 <style>
   .container {
-    border: 1px yellow solid;
-    color: green;
-    margin: 5% 5% auto auto;
+    border: 1px var(--border-color) solid;
+    border-radius: 5px;
+    padding: 2px 5px;
+    background-color: var(--bg-color);
+    position: absolute;
+    top: 50px;
+    right: 50px;
   }
+
+  .container>div {
+    text-align: right;
+  }
+
+  .title {
+    color: var(--text-highlight)
+  }
+
 </style>
