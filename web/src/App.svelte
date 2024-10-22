@@ -1,12 +1,12 @@
 <script lang="ts">
   import VisibilityProvider from './providers/VisibilityProvider.svelte';
-  import HelloWorld from './components/HelloWorld.svelte';
   import { onMount } from 'svelte';
   import { debugData } from './utils/debugData';
   import { useNuiEvent } from './utils/useNuiEvent';
   import { fetchNui } from './utils/fetchNui'
   import {isEnvBrowser} from "./utils/misc";
 
+  import Hud from './components/Hud.svelte';
 
   debugData([
     {
@@ -15,24 +15,8 @@
     },
   ]);
 
-  debugData([
-    {
-      action: 'updateHUD',
-      data: {
-        "top-speed": 1,
-        "top-accel": 2,
-        "top-decel": 3,
-        "gear": 4
-      },
-    },
-  ]);
-
-
-
-
   console.log('ui loaded')
   let handling_visible = false
-  let hud_data: HUDdata
   let handling_data: HandlingData[]
 
   if (isEnvBrowser()) {
@@ -60,18 +44,12 @@
     handling_visible = data
   })
 
-  useNuiEvent<HUDdata>('updateHUD', (data) => {
-    hud_data = data
-  })
-
 </script>
 
 <main>
   <VisibilityProvider>
     <div class="main-container">
-      {#if hud_data}
-        <div class="hud container">GEAR: {hud_data.gear}</div>
-      {/if}
+      <Hud/>
       {#if handling_visible}
         <div class="handling container">HANDLING HERE</div>
       {/if}
@@ -101,13 +79,6 @@
     display: flex;
     flex-direction: column;
     position: relative;
-  }
-
-  .hud.container {
-    
-    border: 1px yellow solid;
-    color: green;
-    margin: 5% 5% auto auto;
   }
 
   .handling.container {
