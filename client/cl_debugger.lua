@@ -199,8 +199,8 @@ end
 
 function Debugger:Invoke(_type, data)
 	SendNUIMessage({
-        action = 'message',
-        data = {type=_type, data=data}
+        action = _type,
+        data = data
 	})
 end
 

@@ -5,6 +5,8 @@
   import { debugData } from './utils/debugData';
   import { useNuiEvent } from './utils/useNuiEvent';
   import { fetchNui } from './utils/fetchNui'
+  import {isEnvBrowser} from "./utils/misc";
+
 
   debugData([
     {
@@ -13,9 +15,13 @@
     },
   ]);
 
+  
   console.log('ui loaded')
   let handling_visible = false
-
+  
+  if (isEnvBrowser()) {
+    document.body.style.backgroundColor = '#474745';
+  }
 
   onMount(() => {
     const keyHandler = (e: KeyboardEvent) => {
@@ -30,13 +36,16 @@
   });
 
 
-  useNuiEvent<any>('message', (data) => {
-    if (data.type === "updateBaseHandling") {console.log(data)}
-    else if (data.type === "setFocus") {handling_visible = data.data}
+  useNuiEvent<any>('updateBaseHandling', (data) => {
+    console.log(data)
+  })
+
+  useNuiEvent<any>('setFocus', (data) => {
+    handling_visible = data
   })
 
 </script>
-<!-- <svelte:window on:keydown|preventDefault={onKeyDown} /> -->
+
 <main>
   <VisibilityProvider>
     <div class="hud container">HUD HERE</div>
