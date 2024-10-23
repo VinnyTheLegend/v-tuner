@@ -26,7 +26,7 @@
         key: 0,
         name: "ftesthandlingname",
         description: "this is an extra long thing to test description for handling fields and stuff ya know baws",
-        value: 123.54123123
+        value: 11123.54123123
       }],
     }
   ]);
@@ -77,10 +77,10 @@
   :global(:root){
     font-family: "Lucida Console", "Courier New", monospace;
     color: white;
-    --bg-color: rgba(70, 0, 70, 0.623);
-    --border-color: rgb(155, 0, 121);
+    --bg-color: rgba(70, 0, 70, 0.801);
+    --border-color: #9b0079;
     --text-color: white;
-    --text-highlight: rgb(0, 141, 197);
+    --text-highlight: rgb(0, 238, 255);
   }
 
   main {
