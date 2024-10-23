@@ -9,6 +9,17 @@
     console.log('handling start')
     export let handling_data: HandlingData[]
 
+    function updateHandling(key: number) {
+        let value = -1
+        for (let i = 0; i < handling_data.length; i++) {
+            if (handling_data[i].key === key) {
+                console.log(handling_data[i]);
+                value = handling_data[i].value
+            }
+        }
+        if (value != -1) fetchNui("updateHandling", {key: key, value: value})
+    }
+
 
 </script>
 
@@ -31,10 +42,10 @@
                         </Tooltip.Root>
                     </div>
                     <div class="base">
-                        <Input class="text-right h-auto bg-gray-800" value={Math.floor(handling.value * 1000) / 1000} disabled> </Input>
+                        <Input class="text-right h-auto bg-gray-800" bind:value={handling.value} disabled> </Input>
                     </div>
                     <div class="current">
-                        <Input class="text-right h-auto bg-gray-800" value={Math.floor(handling.value * 1000) / 1000}> </Input>
+                        <Input class="text-right h-auto bg-gray-800" bind:value={handling.value} on:input={(event) => updateHandling(handling.key)}> </Input>
                     </div>
                 </li>
             {/each}

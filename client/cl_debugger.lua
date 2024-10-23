@@ -231,8 +231,8 @@ end)
 
 --[[ NUI Events ]]--
 RegisterNUICallback("updateHandling", function(data, cb)
-	cb(true)
 	Debugger:SetHandling(tonumber(data.key), data.value)
+	cb(true)
 end)
 
 RegisterNUICallback("copyHandling", function(data, cb)
