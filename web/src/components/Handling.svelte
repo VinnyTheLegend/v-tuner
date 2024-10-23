@@ -50,6 +50,7 @@ li.header>div#name {
 }
 li.header>div#base {
     width: 100px;
+    padding: 0 2px 0 2px;
 }
 li.header>div#current {
     width: 100px;
