@@ -220,8 +220,8 @@ end)
 Citizen.CreateThread(function()
 	while true do
 		if Debugger.isInVehicle then
-			Citizen.Wait(0)
-			Debugger:UpdateInput()
+			Citizen.Wait(100)
+			-- Debugger:UpdateInput()
 			Debugger:UpdateAverages()
 		else
 			Citizen.Wait(500)
