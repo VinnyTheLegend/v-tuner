@@ -8,16 +8,26 @@
 
     console.log('handling start')
     export let handling_data: HandlingData[]
+    let spinners: (boolean | undefined)[] = []
 
     function updateHandling(key: number) {
-        let value = -1
+        let value: number | undefined = undefined
+        let index: number | undefined = undefined
         for (let i = 0; i < handling_data.length; i++) {
             if (handling_data[i].key === key) {
                 console.log(handling_data[i]);
                 value = handling_data[i].value
+                index = i
+                spinners[i] = true
             }
         }
-        if (value != -1) fetchNui("updateHandling", {key: key, value: value})
+    
+        if (value === undefined) return 
+        
+        fetchNui("updateHandling", {key: key, value: value}).then(retData => {
+            console.log('Got return data from client scripts:', retData);
+            if (index != undefined) spinners[index] = false
+        })
     }
 
 
@@ -31,7 +41,7 @@
             <div id="header-current">Current Value</div>
         </li>
         {#if handling_data}            
-            {#each handling_data as handling}
+            {#each handling_data as handling, i}
                 <li class="handling-item">
                     <div class="name">
                         <Tooltip.Root disableHoverableContent={true} closeOnPointerDown={false}>
@@ -42,10 +52,13 @@
                         </Tooltip.Root>
                     </div>
                     <div class="base">
-                        <Input class="text-right h-auto bg-gray-800" bind:value={handling.value} disabled> </Input>
+                        <Input class="text-right h-auto bg-gray-800" bind:value={handling.value} disabled>  </Input>
                     </div>
                     <div class="current">
-                        <Input class="text-right h-auto bg-gray-800" bind:value={handling.value} on:input={(event) => updateHandling(handling.key)}> </Input>
+                        {#if spinners != undefined && spinners[i]}
+                            <span class="loader"></span>
+                        {/if}
+                        <Input class="text-right h-auto bg-gray-800" bind:value={handling.value} on:input={(event) => updateHandling(handling.key)}></Input>
                     </div>
                 </li>
             {/each}
@@ -98,6 +111,56 @@ div.name {
 }
 .base, .current {
     width: 20%;
-    padding: 2px
+    padding: 2px;
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.loader {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: inline-block;
+  position: absolute;
+  border: 3px solid;
+  border-color: #FFF #FFF transparent;
+  box-sizing: border-box;
+  animation: rotation 1s linear infinite;
+}
+.loader::after {
+  content: '';  
+  box-sizing: border-box;
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  margin: auto;
+  border: 3px solid;
+  border-color: transparent #FF3D00 #FF3D00;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  animation: rotationBack 0.5s linear infinite;
+  transform-origin: center center;
+}
+
+@keyframes rotation {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+} 
+    
+@keyframes rotationBack {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(-360deg);
+  }
 }
 </style>
