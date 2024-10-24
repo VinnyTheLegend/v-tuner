@@ -1,4 +1,6 @@
 <script lang="ts">
+    import check from "../assets/check.svg" 
+    import img_x from "../assets/img_x.svg"
     import { debugData } from '../utils/debugData';
     import { fetchNui } from '../utils/fetchNui';
 
@@ -8,7 +10,39 @@
 
     console.log('handling start')
     export let handling_data: HandlingData[]
-    let spinners: (boolean | undefined)[] = []
+
+    const sleep = (milliseconds: number) => {
+        return new Promise(resolve => setTimeout(resolve, milliseconds))
+    }
+
+    interface Loading {
+        spinner: boolean,
+        check: boolean,
+        x: boolean
+    }
+    let loading: Loading[] = []
+
+    async function checkx(index: number, icon: string) {
+        if (icon === "check") {
+            loading[index] = {
+                spinner: false,
+                check: true,
+                x: false,
+            }
+        } else if (icon === "x") {
+            loading[index] = {
+                spinner: false,
+                check: false,
+                x: true
+            }
+        }
+        await sleep(500)
+        loading[index] = {
+            spinner: false,
+            check: false,
+            x: false
+        }
+    }
 
     function updateHandling(key: number) {
         let value: number | undefined = undefined
@@ -18,7 +52,11 @@
                 console.log(handling_data[i]);
                 value = handling_data[i].value
                 index = i
-                spinners[i] = true
+                loading[i] = {
+                    spinner: true,
+                    check: false,
+                    x: false,
+                }
             }
         }
     
@@ -26,7 +64,16 @@
         
         fetchNui("updateHandling", {key: key, value: value}).then(retData => {
             console.log('Got return data from client scripts:', retData);
-            if (index != undefined) spinners[index] = false
+            if (index != undefined) {
+                loading[index].spinner = false
+                checkx(index, "check")
+            }
+        }).catch(error => {
+            console.log(error)
+            if (index != undefined) {
+                loading[index].spinner = false
+                checkx(index, "x")
+            }
         })
     }
 
@@ -52,13 +99,19 @@
                         </Tooltip.Root>
                     </div>
                     <div class="base">
-                        <Input class="text-right h-auto bg-gray-800" bind:value={handling.value} disabled>  </Input>
+                        <Input class="text-right h-auto bg-gray-800" bind:value={handling.value} disabled/>
                     </div>
                     <div class="current">
-                        {#if spinners != undefined && spinners[i]}
+                        {#if loading != undefined && loading[i] != undefined && loading[i].spinner}
                             <span class="loader"></span>
                         {/if}
-                        <Input class="text-right h-auto bg-gray-800" bind:value={handling.value} on:input={(event) => updateHandling(handling.key)}></Input>
+                        {#if loading != undefined && loading[i] != undefined && loading[i].check}
+                            <img class="absolute pl-1" src={check} alt="">
+                        {/if}
+                        {#if loading != undefined && loading[i] != undefined && loading[i].x}
+                            <img class="absolute" src={img_x} alt="">
+                        {/if}
+                        <Input class="text-right h-auto bg-gray-800" bind:value={handling.value} on:input={(event) => updateHandling(handling.key)}/>
                     </div>
                 </li>
             {/each}
@@ -115,6 +168,11 @@ div.name {
     position: relative;
     display: flex;
     align-items: center;
+}
+
+.base>img, .current>img {
+    width: 22px;
+    height: 22px
 }
 
 .loader {
