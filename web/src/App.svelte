@@ -21,7 +21,7 @@
   ]);
   debugData([
     {
-      action: 'updateBaseHandling',
+      action: 'updateCurrentHandling',
       data: [{
         key: 0,
         name: "ftesthandlingname",
@@ -42,6 +42,7 @@
   console.log('ui loaded')
   let handling_visible = false
   let handling_data: HandlingData[]
+  let base_handling: HandlingData[]
 
   if (isEnvBrowser()) {
     document.body.style.backgroundColor = '#474745';
@@ -60,9 +61,14 @@
   });
 
 
-  useNuiEvent<HandlingData[]>('updateBaseHandling', (data) => {
+  useNuiEvent<HandlingData[]>('updateCurrentHandling', (data) => {
     console.log(data)
     handling_data = data
+  })
+
+  useNuiEvent<HandlingData[]>('updateBaseHandling', (data) => {
+    console.log(data)
+    base_handling = data
   })
 
   useNuiEvent<boolean>('setFocus', (data) => {
@@ -76,7 +82,7 @@
     <div class="main-container">
       <Hud/>
       {#if handling_visible && handling_data}
-        <Handling {handling_data}/>
+        <Handling {handling_data} {base_handling}/>
       {/if}
     </div>
   </VisibilityProvider>

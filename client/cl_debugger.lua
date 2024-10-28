@@ -15,11 +15,20 @@ function TruncateNumber(value)
 	return (value % 1.0 > 0.5 and math.ceil(value) or math.floor(value)) / Config.Precision
 end
 
+function Debugger:LoadBaseHandling(display_name)
+	local p = promise.new()
+	QBCore.Functions.TriggerCallback('v-tuner:LoadBaseHandling', function(result)
+	  p:resolve(result)
+	end, display_name)
+	local handling_result = Citizen.Await(p)
+	return handling_result
+end
+
 function Debugger:Set(vehicle)
 	self.vehicle = vehicle
 	self:ResetStats()
 
-	local handlingFields = {}
+	local current_handling = {}
 
 	-- Loop fields.
 	for key, field in pairs(Config.Fields) do
@@ -35,16 +44,60 @@ function Debugger:Set(vehicle)
 			value = TruncateNumber(value)
 		end
 
-		table.insert(handlingFields, {
+		table.insert(current_handling, {
 			key = key, 
 			name = field.name, 
 			value = value, 
 			description = field.description or "Unspecified."
 		})
 	end
+	
+	local display_name = GetDisplayNameFromVehicleModel(GetEntityModel(vehicle))
+	local base_handling = self:LoadBaseHandling(display_name)
+	if base_handling == nil then
+		local p = promise.new()
+		QBCore.Functions.TriggerCallback('v-tuner:SetBaseHandling', function(result)
+			p:resolve(result)
+		end, display_name, current_handling)
+		local handling_result = Citizen.Await(p)
+		base_handling = current_handling
+	else
+		for i, v in pairs(base_handling) do
+			print(i..': ', v)
+		end
+		local new_base_handling = {}
+		for key, field in pairs(Config.Fields) do
+			-- Get field type.
+			local fieldType = Config.Types[field.type]
+			if fieldType == nil then error("no field type") end
+	
+			-- Get value.
+			local value = base_handling[field.name]
+			print(field.name..": ", value)
+			if type(value) == "vector3" then
+				value = ("%s,%s,%s"):format(value.x, value.y, value.z)
+			elseif field.type == "float" then
+				value = TruncateNumber(tonumber(value))
+			end
+			table.insert(new_base_handling, {
+				key = key, 
+				name = field.name, 
+				value = value, 
+				description = field.description or "Unspecified."
+			})
+		end
+		base_handling = new_base_handling
+	end
+
+
+	print("base handling: ")
+	for i, v in pairs(base_handling) do
+		print(i..': ', v)
+	end
 
 	-- Update text.
-	self:Invoke("updateBaseHandling", handlingFields)
+	self:Invoke("updateCurrentHandling", current_handling)
+	self:Invoke("updateBaseHandling", base_handling)
 end
 
 function Debugger:UpdateVehicle()
@@ -230,7 +283,7 @@ Citizen.CreateThread(function()
 end)
 
 --[[ NUI Events ]]--
-RegisterNUICallback("updateHandling", function(data, cb)
+RegisterNUICallback("updateCurrentHandling", function(data, cb)
 	Debugger:SetHandling(tonumber(data.key), data.value)
 	cb(true)
 end)
@@ -264,3 +317,12 @@ RegisterNUICallback("CloseMenu", function(_, cb)
 	cb({})
 	Debugger:Focus(not Debugger.hasFocus)
 end)
+
+RegisterCommand("vehtest", function()
+	local ped = PlayerPedId()
+	local isInVehicle = IsPedInAnyVehicle(ped, false)
+	local vehicle = isInVehicle and GetVehiclePedIsIn(ped, false)
+	local name = GetDisplayNameFromVehicleModel(GetEntityModel(vehicle))
+	print(name)
+end, true)
+

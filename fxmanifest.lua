@@ -10,8 +10,12 @@ lua54 'yes'
 ui_page 'web/build/index.html'
 
 client_script "client/**/*"
-server_script "server/**/*"
 
+server_scripts {
+  "server/**/*",
+  '@oxmysql/lib/MySQL.lua'
+}
+  
 files {
   'web/build/index.html',
   'web/build/**/*'

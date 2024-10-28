@@ -10,6 +10,7 @@
 
     console.log('handling start')
     export let handling_data: HandlingData[]
+    export let base_handling: HandlingData[]
 
     const sleep = (milliseconds: number) => {
         return new Promise(resolve => setTimeout(resolve, milliseconds))
@@ -20,31 +21,31 @@
         check: boolean,
         x: boolean
     }
-    let loading: Loading[] = []
+    let current_loading: Loading[] = []
 
     async function checkx(index: number, icon: string) {
         if (icon === "check") {
-            loading[index] = {
+            current_loading[index] = {
                 spinner: false,
                 check: true,
                 x: false,
             }
         } else if (icon === "x") {
-            loading[index] = {
+            current_loading[index] = {
                 spinner: false,
                 check: false,
                 x: true
             }
         }
         await sleep(500)
-        loading[index] = {
+        current_loading[index] = {
             spinner: false,
             check: false,
             x: false
         }
     }
 
-    function updateHandling(key: number) {
+    function updateCurrentHandling(key: number) {
         let value: number | undefined = undefined
         let index: number | undefined = undefined
         for (let i = 0; i < handling_data.length; i++) {
@@ -52,7 +53,7 @@
                 console.log(handling_data[i]);
                 value = handling_data[i].value
                 index = i
-                loading[i] = {
+                current_loading[i] = {
                     spinner: true,
                     check: false,
                     x: false,
@@ -62,16 +63,16 @@
     
         if (value === undefined) return 
         
-        fetchNui("updateHandling", {key: key, value: value}).then(retData => {
+        fetchNui("updateCurrentHandling", {key: key, value: value}).then(retData => {
             console.log('Got return data from client scripts:', retData);
             if (index != undefined) {
-                loading[index].spinner = false
+                current_loading[index].spinner = false
                 checkx(index, "check")
             }
         }).catch(error => {
             console.log(error)
             if (index != undefined) {
-                loading[index].spinner = false
+                current_loading[index].spinner = false
                 checkx(index, "x")
             }
         })
@@ -99,19 +100,23 @@
                         </Tooltip.Root>
                     </div>
                     <div class="base">
-                        <Input class="text-right h-auto bg-gray-800" bind:value={handling.value} disabled/>
+                        {#if base_handling[i]}
+                            <Input class="text-right h-auto bg-gray-800" bind:value={base_handling[i].value}/>
+                        {:else}
+                            <Input class="text-right h-auto bg-gray-800" disabled/>
+                        {/if}
                     </div>
                     <div class="current">
-                        {#if loading != undefined && loading[i] != undefined && loading[i].spinner}
+                        {#if current_loading != undefined && current_loading[i] != undefined && current_loading[i].spinner}
                             <span class="loader"></span>
                         {/if}
-                        {#if loading != undefined && loading[i] != undefined && loading[i].check}
+                        {#if current_loading != undefined && current_loading[i] != undefined && current_loading[i].check}
                             <img class="absolute pl-1" src={check} alt="">
                         {/if}
-                        {#if loading != undefined && loading[i] != undefined && loading[i].x}
+                        {#if current_loading != undefined && current_loading[i] != undefined && current_loading[i].x}
                             <img class="absolute" src={img_x} alt="">
                         {/if}
-                        <Input class="text-right h-auto bg-gray-800" bind:value={handling.value} on:input={(event) => updateHandling(handling.key)}/>
+                        <Input class="text-right h-auto bg-gray-800" bind:value={handling.value} on:input={(event) => updateCurrentHandling(handling.key)}/>
                     </div>
                 </li>
             {/each}
