@@ -325,4 +325,3 @@ RegisterCommand("vehtest", function()
 	local name = GetDisplayNameFromVehicleModel(GetEntityModel(vehicle))
 	print(name)
 end, true)
-
