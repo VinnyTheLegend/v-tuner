@@ -22,8 +22,9 @@
         x: boolean
     }
     let current_loading: Loading[] = []
+    let base_loading: Loading[] = []
 
-    async function checkx(index: number, icon: string) {
+    async function checkxCurrent(index: number, icon: string) {
         if (icon === "check") {
             current_loading[index] = {
                 spinner: false,
@@ -39,6 +40,28 @@
         }
         await sleep(500)
         current_loading[index] = {
+            spinner: false,
+            check: false,
+            x: false
+        }
+    }
+
+    async function checkxBase(index: number, icon: string) {
+        if (icon === "check") {
+            base_loading[index] = {
+                spinner: false,
+                check: true,
+                x: false,
+            }
+        } else if (icon === "x") {
+            base_loading[index] = {
+                spinner: false,
+                check: false,
+                x: true
+            }
+        }
+        await sleep(500)
+        base_loading[index] = {
             spinner: false,
             check: false,
             x: false
@@ -66,14 +89,50 @@
         fetchNui("updateCurrentHandling", {key: key, value: value}).then(retData => {
             console.log('Got return data from client scripts:', retData);
             if (index != undefined) {
-                current_loading[index].spinner = false
-                checkx(index, "check")
+                base_loading[index].spinner = false
+                checkxCurrent(index, "check")
             }
         }).catch(error => {
             console.log(error)
             if (index != undefined) {
-                current_loading[index].spinner = false
-                checkx(index, "x")
+                base_loading[index].spinner = false
+                checkxCurrent(index, "x")
+            }
+        })
+    }
+
+    function updateBaseHandling(key: number) {
+        let value: number | undefined = undefined
+        let index: number | undefined = undefined
+        let name: string | undefined = undefined
+
+        for (let i = 0; i < base_handling.length; i++) {
+            if (base_handling[i].key === key) {
+                console.log(base_handling[i]);
+                value = base_handling[i].value
+                name = base_handling[i].name
+                index = i
+                base_loading[i] = {
+                    spinner: true,
+                    check: false,
+                    x: false,
+                }
+            }
+        }
+    
+        if (value === undefined) return 
+        
+        fetchNui("updateBaseHandling", {field: name, value: value}).then(retData => {
+            console.log('Got return data from client scripts:', retData);
+            if (index != undefined) {
+                base_loading[index].spinner = false
+                checkxBase(index, "check")
+            }
+        }).catch(error => {
+            console.log(error)
+            if (index != undefined) {
+                base_loading[index].spinner = false
+                checkxBase(index, "x")
             }
         })
     }
@@ -100,8 +159,17 @@
                         </Tooltip.Root>
                     </div>
                     <div class="base">
-                        {#if base_handling[i]}
-                            <Input class="text-right h-auto bg-gray-800" bind:value={base_handling[i].value}/>
+                        {#if base_loading != undefined && base_loading[i] != undefined && base_loading[i].spinner}
+                            <span class="loader"></span>
+                        {/if}
+                        {#if base_loading != undefined && base_loading[i] != undefined && base_loading[i].check}
+                            <img class="absolute pl-1" src={check} alt="">
+                        {/if}
+                        {#if base_loading != undefined && base_loading[i] != undefined && base_loading[i].x}
+                            <img class="absolute" src={img_x} alt="">
+                        {/if}
+                        {#if base_handling && base_handling[i]}
+                            <Input class="text-right h-auto bg-gray-800" bind:value={base_handling[i].value} on:input={(event) => updateBaseHandling(handling.key)}/>
                         {:else}
                             <Input class="text-right h-auto bg-gray-800" disabled/>
                         {/if}

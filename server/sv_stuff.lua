@@ -100,3 +100,8 @@ QBCore.Functions.CreateCallback('v-tuner:SetBaseHandling', function(source, cb, 
         })
     cb(result)
 end)
+
+QBCore.Functions.CreateCallback('v-tuner:UpdateBaseHandling', function(source, cb, display_name, field, value)
+	local result = MySQL.update('UPDATE v_tuner_base SET '..field..' = ? WHERE name = ?', { value, display_name })
+    cb(result)
+end)
