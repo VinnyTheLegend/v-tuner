@@ -227,8 +227,6 @@ li.header>div#header-base {
 li.header>div#header-current {
     width: 20%;
 }
-li.handling-item {
-}
 div.name {
     display: flex;
     text-align: left;
