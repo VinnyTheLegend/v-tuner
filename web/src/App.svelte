@@ -117,7 +117,6 @@
     height: 100vh;
     width: 100vw;
     position: relative;
-    border: 2px red solid;
     padding: 0;
     margin: 0;
     padding: 2px;
@@ -126,7 +125,6 @@
   }
 
   .main-container {
-    border: 1px green solid;
     padding: 1px;
     margin: 0;
     height: 100%;

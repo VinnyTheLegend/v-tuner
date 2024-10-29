@@ -26,12 +26,14 @@
 
 </script>
 
-<div class="hud-container">
+<div>
   {#if hud_data}
-    <div><span class="title">Top Speed: </span>{Math.round(hud_data['top-speed'])}</div>
-    <!-- <div><span class="title">Top Accel: </span>{Math.round(hud_data['top-accel'])}</div>
-    <div><span class="title">Top Decel: </span>{Math.round(hud_data['top-decel'])}</div> -->
-    <div><span class="title">Gear: </span>{Math.round(hud_data.gear)}</div>
+    <div class="hud-container">
+      <div><span class="title">Top Speed: </span>{Math.round(hud_data['top-speed'])}</div>
+      <!-- <div><span class="title">Top Accel: </span>{Math.round(hud_data['top-accel'])}</div>
+      <div><span class="title">Top Decel: </span>{Math.round(hud_data['top-decel'])}</div> -->
+      <div><span class="title">Gear: </span>{Math.round(hud_data.gear)}</div>
+    </div>
   {/if}
 </div>
 
