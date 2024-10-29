@@ -29,28 +29,6 @@ function Debugger:Set(vehicle)
 	self:ResetStats()
 
 	local current_handling = {}
-
-	-- Loop fields.
-	for key, field in pairs(Config.Fields) do
-		-- Get field type.
-		local fieldType = Config.Types[field.type]
-		if fieldType == nil then error("no field type") end
-
-		-- Get value.
-		local value = fieldType.getter(vehicle, "CHandlingData", field.name)
-		if type(value) == "vector3" then
-			value = ("%s,%s,%s"):format(value.x, value.y, value.z)
-		elseif field.type == "float" then
-			value = TruncateNumber(value)
-		end
-
-		table.insert(current_handling, {
-			key = key, 
-			name = field.name, 
-			value = value, 
-			description = field.description or "Unspecified."
-		})
-	end
 	
 	local display_name = GetDisplayNameFromVehicleModel(GetEntityModel(vehicle))
 	local base_handling = self:LoadBaseHandling(display_name)
@@ -89,10 +67,32 @@ function Debugger:Set(vehicle)
 		base_handling = new_base_handling
 	end
 
-
 	print("base handling: ")
 	for i, v in pairs(base_handling) do
 		print(i..': ', v)
+		self:SetHandling(v.key, v.value)
+	end
+	
+	-- Loop fields.
+	for key, field in pairs(Config.Fields) do
+		-- Get field type.
+		local fieldType = Config.Types[field.type]
+		if fieldType == nil then error("no field type") end
+
+		-- Get value.
+		local value = fieldType.getter(vehicle, "CHandlingData", field.name)
+		if type(value) == "vector3" then
+			value = ("%s,%s,%s"):format(value.x, value.y, value.z)
+		elseif field.type == "float" then
+			value = TruncateNumber(value)
+		end
+
+		table.insert(current_handling, {
+			key = key, 
+			name = field.name, 
+			value = value, 
+			description = field.description or "Unspecified."
+		})
 	end
 
 	-- Update text.
