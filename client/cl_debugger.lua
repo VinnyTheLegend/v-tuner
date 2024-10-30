@@ -277,7 +277,7 @@ Citizen.CreateThread(function()
 			-- Debugger:UpdateInput()
 			Debugger:UpdateAverages()
 		else
-			Citizen.Wait(500)
+			Citizen.Wait(1000)
 		end
 	end
 end)
