@@ -107,8 +107,8 @@
   :global(:root){
     font-family: "Lucida Console", "Courier New", monospace;
     color: white;
-    --bg-color: rgba(70, 0, 70, 0.801);
-    --border-color: #9b0079;
+    --bg-color: rgba(17, 0, 15, 0.801);
+    --border-color: #000000cc;
     --text-color: white;
     --text-highlight: rgb(0, 238, 255);
   }

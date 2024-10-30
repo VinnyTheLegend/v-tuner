@@ -16,8 +16,8 @@
     --card: 0 0% 100%;
     --card-foreground: 222.2 84% 4.9%;
  
-    --border: 313 100% 30%;
-    --input: 313 100% 30%;
+    --border: 0 0% 0%;
+    --input: 0 0% 0%;
  
     --primary: 222.2 47.4% 11.2%;
     --primary-foreground: 210 40% 98%;
@@ -49,8 +49,8 @@
     --card: 222.2 84% 4.9%;
     --card-foreground: 210 40% 98%;
  
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
+    --border: 0 0% 0%;
+    --input: 0 0% 0%;
  
     --primary: 210 40% 98%;
     --primary-foreground: 222.2 47.4% 11.2%;
@@ -79,7 +79,7 @@
   }
 
   ::-webkit-scrollbar-thumb {
-    background: #9b0079;
+    background: #6b0054;
     border-radius: 10px;
     -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);
     /* @apply bg-accent */

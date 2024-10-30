@@ -284,8 +284,14 @@ end)
 
 --[[ NUI Events ]]--
 RegisterNUICallback("updateCurrentHandling", function(data, cb)
-	Debugger:SetHandling(tonumber(data.key), data.value)
-	cb(true)
+
+	if pcall(function() return Debugger:SetHandling(tonumber(data.key), data.value) end) then
+		print("success")
+		cb(true)
+	else
+		print("fail")
+		cb(false)
+	end
 end)
 
 RegisterNUICallback("updateBaseHandling", function(data, cb)

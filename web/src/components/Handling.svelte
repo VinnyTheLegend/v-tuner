@@ -31,18 +31,18 @@
                 check: true,
                 x: false,
             }
+            await sleep(500)
+            current_loading[index] = {
+                spinner: false,
+                check: false,
+                x: false
+            }
         } else if (icon === "x") {
             current_loading[index] = {
                 spinner: false,
                 check: false,
                 x: true
             }
-        }
-        await sleep(500)
-        current_loading[index] = {
-            spinner: false,
-            check: false,
-            x: false
         }
     }
 
@@ -53,18 +53,18 @@
                 check: true,
                 x: false,
             }
+            await sleep(500)
+            base_loading[index] = {
+                spinner: false,
+                check: false,
+                x: false
+            }
         } else if (icon === "x") {
             base_loading[index] = {
                 spinner: false,
                 check: false,
                 x: true
             }
-        }
-        await sleep(500)
-        base_loading[index] = {
-            spinner: false,
-            check: false,
-            x: false
         }
     }
 
@@ -89,13 +89,13 @@
         fetchNui("updateCurrentHandling", {key: key, value: value}).then(retData => {
             console.log('Got return data from client scripts:', retData);
             if (index != undefined) {
-                base_loading[index].spinner = false
-                checkxCurrent(index, "check")
+                current_loading[index].spinner = false
+                if (retData !== false) checkxCurrent(index, "check"); else checkxCurrent(index, "x")
             }
         }).catch(error => {
             console.log(error)
             if (index != undefined) {
-                base_loading[index].spinner = false
+                current_loading[index].spinner = false
                 checkxCurrent(index, "x")
             }
         })
@@ -126,11 +126,11 @@
             console.log('Got return data from client scripts:', retData);
             if (index != undefined) {
                 base_loading[index].spinner = false
-                checkxBase(index, "check")
+                if (retData !== false) checkxBase(index, "check"); else checkxBase(index, "x")
             }
         }).catch(error => {
             console.log(error)
-            if (index != undefined) {
+            if (index !== undefined) {
                 base_loading[index].spinner = false
                 checkxBase(index, "x")
             }
@@ -166,7 +166,7 @@
                             <img class="absolute pl-1" src={check} alt="">
                         {/if}
                         {#if base_loading != undefined && base_loading[i] != undefined && base_loading[i].x}
-                            <img class="absolute" src={img_x} alt="">
+                            <img class="absolute pl-1" src={img_x} alt="">
                         {/if}
                         {#if base_handling && base_handling[i]}
                             <Input class="text-right h-auto bg-gray-800" bind:value={base_handling[i].value} on:input={(event) => updateBaseHandling(handling.key)}/>
@@ -182,7 +182,7 @@
                             <img class="absolute pl-1" src={check} alt="">
                         {/if}
                         {#if current_loading != undefined && current_loading[i] != undefined && current_loading[i].x}
-                            <img class="absolute" src={img_x} alt="">
+                            <img class="absolute pl-1" src={img_x} alt="">
                         {/if}
                         <Input class="text-right h-auto bg-gray-800" bind:value={handling.value} on:input={(event) => updateCurrentHandling(handling.key)}/>
                     </div>
@@ -199,18 +199,18 @@
     border-radius: 5px;
     background-color: var(--bg-color);
     margin: 50px auto 50px 50px;
-    width: 550px;
+    width: 620px;
     animation: 3s infinite alternate slide-in;
 }
 li {
     display: flex;
 }
 li:nth-child(even) {
-    background-color: rgba(54, 1, 54, 0.801);
+    background-color: rgba(44, 0, 44, 0.801);
 }
 li.header>div {
     color: var(--text-highlight);
-    padding-top: 2px;
+    padding-top: 5px;
     display: flex;
     text-align: center;
     justify-content: center;
@@ -218,23 +218,22 @@ li.header>div {
     border-bottom: 1px solid var(--border-color)
 }
 li.header>div#header-name {
-    width: 60%;
+    width: 50%;
 }
 li.header>div#header-base {
-    width: 20%;
-    padding: 0 2px 0 2px;
+    width: 25%;
 }
 li.header>div#header-current {
-    width: 20%;
+    width: 25%;
 }
 div.name {
     display: flex;
     text-align: left;
-    width: 60%;
+    width: 50%;
     align-items: center;
 }
 .base, .current {
-    width: 20%;
+    width: 25%;
     padding: 2px;
     position: relative;
     display: flex;
