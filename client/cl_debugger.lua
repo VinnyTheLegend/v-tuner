@@ -29,7 +29,29 @@ function Debugger:Set(vehicle)
 	self:ResetStats()
 
 	local current_handling = {}
-	
+
+	-- Loop fields.
+	for key, field in pairs(Config.Fields) do
+		-- Get field type.
+		local fieldType = Config.Types[field.type]
+		if fieldType == nil then error("no field type") end
+
+		-- Get value.
+		local value = fieldType.getter(vehicle, "CHandlingData", field.name)
+		if type(value) == "vector3" then
+			value = ("%s,%s,%s"):format(value.x, value.y, value.z)
+		elseif field.type == "float" then
+			value = TruncateNumber(value)
+		end
+
+		table.insert(current_handling, {
+			key = key, 
+			name = field.name, 
+			value = value, 
+			description = field.description or "Unspecified."
+		})
+	end
+
 	local display_name = GetDisplayNameFromVehicleModel(GetEntityModel(vehicle))
 	local base_handling = self:LoadBaseHandling(display_name)
 	if base_handling == nil then
@@ -65,35 +87,15 @@ function Debugger:Set(vehicle)
 			})
 		end
 		base_handling = new_base_handling
+		current_handling = new_base_handling
 	end
 
 	print("base handling: ")
 	for i, v in pairs(base_handling) do
-		print(i..': ', v)
+		print(v.name..': ', v.value)
 		self:SetHandling(v.key, v.value)
 	end
-	
-	-- Loop fields.
-	for key, field in pairs(Config.Fields) do
-		-- Get field type.
-		local fieldType = Config.Types[field.type]
-		if fieldType == nil then error("no field type") end
-
-		-- Get value.
-		local value = fieldType.getter(vehicle, "CHandlingData", field.name)
-		if type(value) == "vector3" then
-			value = ("%s,%s,%s"):format(value.x, value.y, value.z)
-		elseif field.type == "float" then
-			value = TruncateNumber(value)
-		end
-
-		table.insert(current_handling, {
-			key = key, 
-			name = field.name, 
-			value = value, 
-			description = field.description or "Unspecified."
-		})
-	end
+	print("end base handling")
 
 	-- Update text.
 	self:Invoke("updateCurrentHandling", current_handling)
@@ -295,6 +297,45 @@ RegisterNUICallback("updateCurrentHandling", function(data, cb)
 end)
 
 RegisterNUICallback("updateBaseHandling", function(data, cb)
+	local value
+	local fieldType = Config.Fields[data.key].type
+	if fieldType == nil then error("no field") end
+
+	print("key: ", data.key)
+	print("field: ", fieldType)
+	print(data.value)
+	
+	if fieldType == "float" then
+		if tonumber(data.value) == nil then
+			cb(false)
+			return
+		end
+		value = data.value + 0.0
+	elseif fieldType == "integer" then
+		if tonumber(data.value) == nil then
+			cb(false)
+			return
+		end
+		value = math.floor(data.value)
+	elseif fieldType == "vector" then
+		local axes = 1
+		local vector = {}
+
+		for axis in data.value:gmatch("([^,]+)") do
+			vector[axes] = tonumber(axis)
+			axes = axes + 1
+		end
+
+		for i = 1, 3 do
+			if vector[i] == nil then
+				cb(false)
+				return
+			end
+		end
+		value = vector3(vector[1], vector[2], vector[3])
+	end
+
+
 	local ped = PlayerPedId()
 	local isInVehicle = IsPedInAnyVehicle(ped, false)
 	local vehicle = isInVehicle and GetVehiclePedIsIn(ped, false)
@@ -302,7 +343,7 @@ RegisterNUICallback("updateBaseHandling", function(data, cb)
 	local p = promise.new()
 	QBCore.Functions.TriggerCallback('v-tuner:UpdateBaseHandling', function(result)
 		p:resolve(result)
-	end, display_name, data.field, data.value)
+	end, display_name, data.field, value)
 	local result = Citizen.Await(p)
 	print(result)
 	cb(result)

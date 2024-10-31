@@ -122,7 +122,7 @@
     
         if (value === undefined) return 
         
-        fetchNui("updateBaseHandling", {field: name, value: value}).then(retData => {
+        fetchNui("updateBaseHandling", {key: key, field: name, value: value}).then(retData => {
             console.log('Got return data from client scripts:', retData);
             if (index != undefined) {
                 base_loading[index].spinner = false
