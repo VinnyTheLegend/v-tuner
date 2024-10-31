@@ -73,15 +73,30 @@ function Debugger:Set(vehicle)
 	
 			-- Get value.
 			local value = base_handling[field.name]
-			print(field.name..": ", value)
-			if type(value) == "vector3" then
-				local x = tonumber(value.x)
-				local y = tonumber(value.y)
-				local z = tonumber(value.z)
-				if x == nil or y == nil or z == nil then
-					self:SetHandling(key, current_handling[key].value)
-					goto next 
+			print(field.name..": ", value, field.type)
+			if value == nil then
+				value = current_handling[key].value
+				goto next
+			end
+			if field.type == "vector" then 
+				local axes = 1
+				local vector = {}
+
+				for axis in value:gmatch("([^,]+)") do
+					vector[axes] = tonumber(axis)
+					axes = axes + 1
 				end
+
+				for i = 1, 3 do
+					if vector[i] == nil then
+						print("missing vector")
+						self:SetHandling(key, current_handling[key].value)
+						goto next 
+					end
+				end
+			end
+
+			if type(value) == "vector3" then
 				value = ("%s,%s,%s"):format(value.x, value.y, value.z)
 			elseif field.type == "float" then
 				local number = tonumber(value)
@@ -103,12 +118,6 @@ function Debugger:Set(vehicle)
 		base_handling = new_base_handling
 		current_handling = new_base_handling
 	end
-
-	print("base handling: ")
-	for i, v in pairs(base_handling) do
-		print(v.name..': ', v.value)
-	end
-	print("end base handling")
 
 	-- Update text.
 	self:Invoke("updateCurrentHandling", current_handling)
@@ -301,10 +310,8 @@ end)
 RegisterNUICallback("updateCurrentHandling", function(data, cb)
 
 	if pcall(function() return Debugger:SetHandling(tonumber(data.key), data.value) end) then
-		print("success")
 		cb(true)
 	else
-		print("fail")
 		cb(false)
 	end
 end)
@@ -316,7 +323,7 @@ RegisterNUICallback("updateBaseHandling", function(data, cb)
 
 	print("key: ", data.key)
 	print("field: ", fieldType)
-	print(data.value)
+	print("value: ", data.value)
 	
 	if fieldType == "float" then
 		if tonumber(data.value) == nil then
@@ -394,11 +401,3 @@ RegisterNUICallback("CloseMenu", function(_, cb)
 	cb({})
 	Debugger:Focus(not Debugger.hasFocus)
 end)
-
-RegisterCommand("vehtest", function()
-	local ped = PlayerPedId()
-	local isInVehicle = IsPedInAnyVehicle(ped, false)
-	local vehicle = isInVehicle and GetVehiclePedIsIn(ped, false)
-	local name = GetDisplayNameFromVehicleModel(GetEntityModel(vehicle))
-	print(name)
-end, true)
