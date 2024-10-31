@@ -32,11 +32,7 @@
                 x: false,
             }
             await sleep(500)
-            current_loading[index] = {
-                spinner: false,
-                check: false,
-                x: false
-            }
+            current_loading[index].spinner = false
         } else if (icon === "x") {
             current_loading[index] = {
                 spinner: false,
@@ -54,11 +50,7 @@
                 x: false,
             }
             await sleep(500)
-            base_loading[index] = {
-                spinner: false,
-                check: false,
-                x: false
-            }
+            base_loading[index].check = false
         } else if (icon === "x") {
             base_loading[index] = {
                 spinner: false,

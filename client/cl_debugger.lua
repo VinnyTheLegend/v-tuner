@@ -307,12 +307,14 @@ RegisterNUICallback("updateBaseHandling", function(data, cb)
 	
 	if fieldType == "float" then
 		if tonumber(data.value) == nil then
+			Citizen.Wait(100)
 			cb(false)
 			return
 		end
 		value = data.value + 0.0
 	elseif fieldType == "integer" then
 		if tonumber(data.value) == nil then
+			Citizen.Wait(100)
 			cb(false)
 			return
 		end
@@ -328,6 +330,7 @@ RegisterNUICallback("updateBaseHandling", function(data, cb)
 
 		for i = 1, 3 do
 			if vector[i] == nil then
+				Citizen.Wait(100)
 				cb(false)
 				return
 			end
