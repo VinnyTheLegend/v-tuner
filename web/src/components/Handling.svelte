@@ -32,7 +32,7 @@
                 x: false,
             }
             await sleep(500)
-            current_loading[index].spinner = false
+            current_loading[index].check = false
         } else if (icon === "x") {
             current_loading[index] = {
                 spinner: false,
