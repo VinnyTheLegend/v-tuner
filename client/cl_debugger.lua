@@ -75,10 +75,24 @@ function Debugger:Set(vehicle)
 			local value = base_handling[field.name]
 			print(field.name..": ", value)
 			if type(value) == "vector3" then
+				local x = tonumber(value.x)
+				local y = tonumber(value.y)
+				local z = tonumber(value.z)
+				if x == nil or y == nil or z == nil then
+					self:SetHandling(key, current_handling[key].value)
+					goto next 
+				end
 				value = ("%s,%s,%s"):format(value.x, value.y, value.z)
 			elseif field.type == "float" then
+				local number = tonumber(value)
+				if number == nil then 
+					self:SetHandling(key, current_handling[key].value)
+					goto next 
+				end
 				value = TruncateNumber(tonumber(value))
 			end
+			self:SetHandling(key, value)
+			::next::
 			table.insert(new_base_handling, {
 				key = key, 
 				name = field.name, 
@@ -93,7 +107,6 @@ function Debugger:Set(vehicle)
 	print("base handling: ")
 	for i, v in pairs(base_handling) do
 		print(v.name..': ', v.value)
-		self:SetHandling(v.key, v.value)
 	end
 	print("end base handling")
 
