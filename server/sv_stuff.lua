@@ -19,7 +19,7 @@ function HasPermission(source)
 end
 
 
-QBCore.Commands.Add("vehdebug", "Enable Vehicle Debugger", {}, false, function(source)
+QBCore.Commands.Add("v-tuner", "Enable the vehicle handling editor.", {}, false, function(source)
     local src = source
     if HasPermission(src) == true then
         TriggerClientEvent('vehicleDebug:client:toggleDebug', src)
