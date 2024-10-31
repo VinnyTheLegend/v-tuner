@@ -1,11 +1,15 @@
 local QBCore = exports['qb-core']:GetCoreObject()
+-- add citizen ids here for people allowed to use the UI and spawn cars
+-- admin and god can use it by default
+local DEVS = {
+
+}
 
 function HasPermission(source)
     local Player = QBCore.Functions.GetPlayer(source)
     local cid = Player.PlayerData.citizenid
-    local devs = {}
     local dev = false
-    for i, v in ipairs(devs) do
+    for i, v in ipairs(DEVS) do
         if cid == v then dev = true end
     end
     if QBCore.Functions.HasPermission(source, 'god') == true or QBCore.Functions.HasPermission(source, 'admin') == true then
