@@ -52,14 +52,6 @@
     right: 50px;
   }
 
-  .confirm {
-    border: 1px var(--border-color) solid;
-    border-radius: 5px;
-    background-color: var(--bg-color);
-    margin: 50px auto 50px 50px;
-    animation: 3s infinite alternate slide-in;
-}
-
   .hud-container>div {
     text-align: right;
   }
