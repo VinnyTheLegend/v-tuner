@@ -8,6 +8,7 @@
 
   import Hud from './components/Hud.svelte';
   import Handling from './components/Handling.svelte';
+  import ResetConfirm from './components/ResetConfirm.svelte';
 
   debugData([
     {
@@ -59,6 +60,7 @@
   let handling_visible = false
   let handling_data: HandlingData[]
   let base_handling: HandlingData[]
+  let reset_confirm = false
 
   if (isEnvBrowser()) {
     document.body.style.backgroundColor = '#474745';
@@ -93,15 +95,16 @@
 
 </script>
 
-<main>
+<main class="">
+  <ResetConfirm />
+  <div class="main-container">
   <VisibilityProvider>
-    <div class="main-container">
-      <Hud/>
-      {#if handling_visible && handling_data}
-        <Handling {handling_data} {base_handling}/>
-      {/if}
-    </div>
-  </VisibilityProvider>
+    <Hud />
+    {#if handling_visible && handling_data}
+    <Handling {handling_data} {base_handling}/>
+    {/if}
+    </VisibilityProvider>
+  </div>
 </main>
 <style>
   :global(:root){

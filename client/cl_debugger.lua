@@ -39,6 +39,7 @@ function Debugger:Set(vehicle)
 		-- Get value.
 		local value = fieldType.getter(vehicle, "CHandlingData", field.name)
 		if type(value) == "vector3" then
+			---@diagnostic disable-next-line: cast-local-type
 			value = ("%s,%s,%s"):format(value.x, value.y, value.z)
 		elseif field.type == "float" then
 			value = TruncateNumber(value)
@@ -127,7 +128,7 @@ end
 function Debugger:UpdateVehicle()
 	local ped = PlayerPedId()
 	local isInVehicle = IsPedInAnyVehicle(ped, false)
-	local vehicle = isInVehicle and GetVehiclePedIsIn(ped, false)
+	local vehicle = GetVehiclePedIsIn(ped, false)
 
 	if self.isInVehicle ~= isInVehicle or self.vehicle ~= vehicle then
 		self.vehicle = vehicle
@@ -136,13 +137,6 @@ function Debugger:UpdateVehicle()
 		if isInVehicle and DoesEntityExist(vehicle) then
 			self:Set(vehicle)
 		end
-	end
-end
-
-function Debugger:UpdateInput()
-	if self.hasFocus then
-		DisableControlAction(0, 1)
-		DisableControlAction(0, 2)
 	end
 end
 
@@ -244,7 +238,7 @@ function Debugger:CopyHandling()
 		if fieldType == nil then error("no field type") end
 
 		-- Get value.
-		local value = fieldType.getter(vehicle, "CHandlingData", field.name, true)
+		local value = fieldType.getter(vehicle, "CHandlingData", field.name)
 		local nValue = tonumber(value)
 
 		-- Append text.
@@ -298,7 +292,6 @@ Citizen.CreateThread(function()
 	while true do
 		if Debugger.isInVehicle then
 			Citizen.Wait(100)
-			-- Debugger:UpdateInput()
 			Debugger:UpdateAverages()
 		else
 			Citizen.Wait(1000)
@@ -358,10 +351,8 @@ RegisterNUICallback("updateBaseHandling", function(data, cb)
 		value = vector3(vector[1], vector[2], vector[3])
 	end
 
-
 	local ped = PlayerPedId()
-	local isInVehicle = IsPedInAnyVehicle(ped, false)
-	local vehicle = isInVehicle and GetVehiclePedIsIn(ped, false)
+	local vehicle = GetVehiclePedIsIn(ped, false)
 	local display_name = GetDisplayNameFromVehicleModel(GetEntityModel(vehicle))
 	local p = promise.new()
 	QBCore.Functions.TriggerCallback('v-tuner:UpdateBaseHandling', function(result)
@@ -396,6 +387,45 @@ RegisterNetEvent("vehicleDebug:client:toggleDebug", function()
 	Debugger:ToggleOn(not Debugger.toggleOn)
 	Debugger.toggleOn = not Debugger.toggleOn
 end)
+
+RegisterNetEvent("vehicleDebug:client:resetBaseHandling", function()
+	SetNuiFocus(true, true)
+	SendNUIMessage({
+        action = 'resetConfirm',
+        data = true
+    })
+end)
+
+RegisterNUICallback("resetConfirm", function(data, cb)
+	SetNuiFocus(Debugger.hasFocus, Debugger.hasFocus)
+	if not data then
+		cb(false)
+		return
+	end
+	ResetBaseHandling()
+	cb(true)
+end)
+
+function ResetBaseHandling()
+	local ped = PlayerPedId()
+	-- local isInVehicle = IsPedInAnyVehicle(ped, false)
+	local vehicle = GetVehiclePedIsIn(ped, false)
+	local display_name = GetDisplayNameFromVehicleModel(GetEntityModel(vehicle))
+	if display_name == nil or display_name == "" then
+		print("No vehicle found to reset handling for.")
+		return
+	end
+	local p = promise.new()
+	QBCore.Functions.TriggerCallback('v-tuner:deleteBaseHandling', function(result)
+		p:resolve(result)
+	end, display_name)
+	local result = Citizen.Await(p)
+	DeleteVehicle(vehicle)
+	Debugger.vehicle = nil
+	TriggerServerEvent('v-tuner:server:SpawnVehicle', display_name)
+	Debugger:UpdateVehicle()
+	QBCore.Functions.Notify("Vehicle handling reset.", "success")
+end
 
 RegisterNUICallback("CloseMenu", function(_, cb)
 	cb({})

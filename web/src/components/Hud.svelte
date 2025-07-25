@@ -1,7 +1,5 @@
 <script lang="ts">
-  import { visibility } from '../store/stores';
   import { debugData } from '../utils/debugData';
-  import { fetchNui } from '../utils/fetchNui';
   import { useNuiEvent } from '../utils/useNuiEvent';
 
   console.log('hud start')
@@ -17,6 +15,12 @@
       },
     },
   ]);
+  debugData([
+    {
+      action: 'resetConfirm',
+      data: true
+    }
+  ]);
 
   let hud_data: HUDdata
 
@@ -26,7 +30,7 @@
 
 </script>
 
-<div>
+<div class="">
   {#if hud_data}
     <div class="hud-container">
       <div><span class="title">Top Speed: </span>{Math.round(hud_data['top-speed'])}</div>
@@ -47,6 +51,14 @@
     top: 50px;
     right: 50px;
   }
+
+  .confirm {
+    border: 1px var(--border-color) solid;
+    border-radius: 5px;
+    background-color: var(--bg-color);
+    margin: 50px auto 50px 50px;
+    animation: 3s infinite alternate slide-in;
+}
 
   .hud-container>div {
     text-align: right;

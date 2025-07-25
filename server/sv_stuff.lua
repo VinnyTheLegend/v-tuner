@@ -22,18 +22,33 @@ function HasPermission(source)
     end
 end
 
-
-QBCore.Commands.Add("v-tuner", "Enable the vehicle handling editor.", {}, false, function(source)
+local arguments = {
+    {name = 'car/reset', help = 'Optional: \"car\" or \"reset\"'},
+    {name = 'car model', help = 'Optional: Vehicle model name if \"car\" is specified'},
+}
+QBCore.Commands.Add("v-tuner", "Enable the vehicle handling editor.", arguments, false, function(source, args)
     local src = source
     if HasPermission(src) == true then
-        TriggerClientEvent('vehicleDebug:client:toggleDebug', src)
-    end
-end)
-
-QBCore.Commands.Add('devcar', "spawn a car", {{ name = "model", help = "Car model name." }}, true, function(source, args)
-    local src = source
-    if HasPermission(src) == true then
-        TriggerClientEvent('QBCore:Command:SpawnVehicle', src, args[1])
+        if args[1] == nil or args[1] == "" then
+            TriggerClientEvent('vehicleDebug:client:toggleDebug', src)
+        elseif args[1] == "reset" then
+            print('reset')
+            TriggerClientEvent('vehicleDebug:client:resetBaseHandling', src)
+        elseif args[1] == "car" then
+            if not args[2] or args[2] == "" then
+                TriggerClientEvent('QBCore:Notify', src, 'You need to specify a vehicle model.', 'error')
+                return
+            end
+            local ped, bucket = GetPlayerPed(src), GetPlayerRoutingBucket(src)
+            local _, vehicle = qbx.spawnVehicle({
+                model = args[2],
+                spawnSource = ped,
+                warp = true,
+                bucket = bucket
+            })
+            local plate = qbx.getVehiclePlate(vehicle)
+            exports.qbx_vehiclekeys:GiveKeys(src, vehicle)
+        end
     end
 end)
 
@@ -102,6 +117,32 @@ QBCore.Functions.CreateCallback('v-tuner:SetBaseHandling', function(source, cb, 
             new_handling_data["fSeatOffsetDistZ"],
             new_handling_data["nMonetaryValue"]
         })
+    cb(result)
+end)
+
+RegisterNetEvent('v-tuner:server:SpawnVehicle', function(vehicle_name)
+    local src = source
+    if not HasPermission(src) then
+        return
+    end
+    local ped, bucket = GetPlayerPed(src), GetPlayerRoutingBucket(src)
+
+    local _, vehicle = qbx.spawnVehicle({
+        model = vehicle_name,
+        spawnSource = ped,
+        warp = true,
+        bucket = bucket
+    })
+    local plate = qbx.getVehiclePlate(vehicle)
+    exports.qbx_vehiclekeys:GiveKeys(src, vehicle)
+
+end)
+
+
+QBCore.Functions.CreateCallback('v-tuner:deleteBaseHandling', function(source, cb, display_name)
+	local result = MySQL.update.await('DELETE FROM v_tuner_base WHERE name = ?', { display_name })
+    print("Deleted base handling for: ", display_name)
+    print("Result: ", result)
     cb(result)
 end)
 
