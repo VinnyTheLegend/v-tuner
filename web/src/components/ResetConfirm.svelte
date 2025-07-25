@@ -23,8 +23,8 @@
 
 </script>
 
+{#if reset_confirm}
 <div class="absolute size-[99%] flex justify-center items-center box-border z-10">
-  {#if reset_confirm}
     <div class="confirm absolute">
       <div class="text-center p-2">
         <p>Are you sure you want to reset the handling?</p>
@@ -35,8 +35,8 @@
         <Button class="mb-2" on:click={() => HandleConfirm(false)}>No</Button>
       </div>
     </div>
-  {/if}
 </div>
+{/if}
 
 <style>
   .confirm {
