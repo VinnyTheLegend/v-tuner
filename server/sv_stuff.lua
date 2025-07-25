@@ -32,7 +32,6 @@ QBCore.Commands.Add("v-tuner", "Enable the vehicle handling editor.", arguments,
         if args[1] == nil or args[1] == "" then
             TriggerClientEvent('vehicleDebug:client:toggleDebug', src)
         elseif args[1] == "reset" then
-            print('reset')
             TriggerClientEvent('vehicleDebug:client:resetBaseHandling', src)
         elseif args[1] == "car" then
             if not args[2] or args[2] == "" then
@@ -61,7 +60,6 @@ QBCore.Functions.CreateCallback('v-tuner:LoadBaseHandling', function(source, cb,
 end)
 
 QBCore.Functions.CreateCallback('v-tuner:SetBaseHandling', function(source, cb, display_name, handling_data)
-    print("name: ", display_name)
     local new_handling_data = {}
     for index, field in ipairs(handling_data) do
         new_handling_data[field.name] = field.value
@@ -141,8 +139,6 @@ end)
 
 QBCore.Functions.CreateCallback('v-tuner:deleteBaseHandling', function(source, cb, display_name)
 	local result = MySQL.update.await('DELETE FROM v_tuner_base WHERE name = ?', { display_name })
-    print("Deleted base handling for: ", display_name)
-    print("Result: ", result)
     cb(result)
 end)
 
